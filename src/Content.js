@@ -1,31 +1,32 @@
+/* eslint-disable jsx-a11y/alt-text */
 import { useEffect, useState } from "react";
 
 
 function Content() {
-    const [title, setTitle] = useState('');
-    const [data, setData] = useState([]);
+    const [avatar, setAvatar] = useState();
 
+    const handleChangefile = (e) => {
+        const imgObject = e.target.files[0];
+        imgObject.imgUrl = URL.createObjectURL(imgObject);
+        console.log(imgObject.imgUrl);
+        setAvatar(imgObject);
+    }
 
     useEffect(() => {
-        fetch('https://jsonplaceholder.typicode.com/posts')
-            .then(response => {
-                response.json().then(res => {
-                    setData(res)
-                })
-            })
-    }, [])
+        return () => {
+            avatar && URL.revokeObjectURL(avatar.imgUrl)
+        }
+    }, [avatar])
 
     return (
         <div style={{ margin: 30 }}>
-            <h1>
-                {title}
-            </h1>
-            <input onChange={e => setTitle(e.target.value)} />
-            <ul>
-                {data.map((item) => {
-                    return <li key={item.id}>{item.title}</li>
-                })}
-            </ul>
+            <input
+                type="file"
+                onChange={handleChangefile}
+            />
+            {avatar && (
+                <img src={avatar.imgUrl} width="80%" />
+            )}
         </div>
     )
 }
